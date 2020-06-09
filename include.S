@@ -1,3 +1,7 @@
+/******************************************************************/
+/* Include values for Sonic the Fighters disasssembly
+   Makes the whole thing a little more human readable */
+/******************************************************************/   
    .globl   RAMBASE_START
    .set  RAMBASE_START,0x500000
    .globl   CPU_FAIL
