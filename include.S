@@ -96,6 +96,14 @@
    .set  CHAR_SEL_FLAGS,0x500248
    .globl   CHAR_SEL_DISABLE_P2
    .set  CHAR_SEL_DISABLE_P2,0x50024C
+   .globl   texram_0
+   .set  texram_0,0x500250 
+   .globl   texram_0_1
+   .set  texram_0_1,0x500254 
+   .globl   texram_1
+   .set  texram_1,0x500258 
+   .globl   luma_ram
+   .set  luma_ram,0x50025C 
    .globl   scroll_stage_num
    .set  scroll_stage_num,0x500264
    .globl   cage_height
@@ -120,6 +128,8 @@
    .set  randomize_story_order,0x500454
    .globl   not_use
    .set  not_use,0x500600
+   .globl   not_free
+   .set  not_free,0x500604 
    .globl   free
    .set  free,0x500608
    .globl   INTERUPT_FLAGS_HELD
@@ -498,8 +508,8 @@
    .set  BACKUP_RAM_TO_RAM,0x599000
    .globl   save_working_0
    .set  save_working_0,0x59C000
-   .globl   short_12_backup
-   .set  short_12_backup,0x59C306
+   .globl   short_0x12_ram
+   .set  short_0x12_ram,0x59C306
    .globl   aInosehtchgifRe
    .set  aInosehtchgifRe,0x59C308
    .globl   test_int
@@ -510,10 +520,24 @@
    .set  cvt_ir,0x59E048
    .globl   loop
    .set  loop,0x59E04C
+   .globl   instruction_buffer
+   .set  instruction_buffer,0x59F270 
    .globl   write_pallete_buffer
    .set  write_pallete_buffer,0x59F270
+   .globl   num_motions_ram
+   .set  num_motions_ram,0x5A0000
+   .globl   list_motions_ram
+   .set  list_motions_ram,0x5A0004
+   .globl   instruction_thing
+   .set  instruction_thing,0x5FF000
    .globl   BUFF_RAM_START
    .set  BUFF_RAM_START,0x900000
+   .globl   BUFF_RAM_01
+   .set  BUFF_RAM_01,0x908000
+   .globl   BUFF_RAM_02
+   .set  BUFF_RAM_02,0x910000
+   .globl   BUFF_RAM_03
+   .set  BUFF_RAM_03,0x918000
    .globl   CPU_CONTROL_START
    .set  CPU_CONTROL_START,0xE00000
    .globl   TILE_DATA_START
@@ -524,6 +548,10 @@
    .set  HSYNC_START,0x1040000
    .globl   VSYNC_START
    .set  VSYNC_START,0x1060000
+   .globl   STAGE_PALETTE_DATA
+   .set STAGE_PALETTE_DATA,0x1800000 
+   .globl   PLAYER_PALETTE_DATA
+   .set  PLAYER_PALETTE_DATA,0x1802000
    .globl   IO_PORTS
    .set  IO_PORTS,0x1C00000
    .globl   SERIAL_START
@@ -604,10 +632,18 @@
    .set  bk_P1_CONTI_B,0x1D033F8
    .globl   bk_VS_CONTI_B
    .set  bk_VS_CONTI_B,0x1D033FC
+   .globl   add_TILE_DATA_START
+   .set add_TILE_DATA_START,0x20D000C 
+   .globl   PLAYER_PALETTE_DATA_ROM
+   .set  PLAYER_PALETTE_DATA_ROM,0x2100000 
+   .globl   texture_check_data
+   .set  texture_check_data,0x2300000 
    .globl   texture_pallete_offsets
    .set  texture_pallete_offsets,0x6480300
    .globl   offset_list_motions
    .set  offset_list_motions,0x6400004
+   .globl   num_motions_xtra
+   .set  num_motions_xtra,0x6C00000
    .globl   LUMA_START
    .set  LUMA_START,0x11400000
    
