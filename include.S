@@ -16,10 +16,16 @@
    .set  mode,0x50002A
    .globl   also_mode
    .set  also_mode,0x50002B
+   .globl   mode_flag
+   .set  mode_flag,0x50002C
    .globl   _sub_mode
    .set  _sub_mode,0x500030
+   .globl   also_sub_mode
+   .set  also_sub_mode,0x500031
    .globl   nameentry
    .set  nameentry,0x500038
+   .globl   draw_vs_routine_flag
+   .set  draw_vs_routine_flag,0x500048
    .globl   gameprogram
    .set  gameprogram,0x50004C
    .globl   p1_wins
@@ -30,16 +36,20 @@
    .set  num_rounds_to_win,0x500052
    .globl   STAGE_ID
    .set  STAGE_ID,0x500054
-   .globl   barrier_flag
-   .set  barrier_flag,0x500055
+   .globl curr_round_num
+   .set curr_round_num,0x500055
    .globl   LEVEL_ID
    .set  LEVEL_ID,0x500064
    .globl   winner
    .set  winner,0x500065
+   .globl   current_stage_played_num
+   .set  current_stage_played_num,0x500067
    .globl   not_scr_bg_move
    .set  not_scr_bg_move,0x500068
    .globl   CPU_FAIL_flag
    .set  CPU_FAIL_flag,0x50006D
+   .globl   name_entry_related
+   .set  name_entry_related, 0x500078
    .globl   rank_mode
    .set  rank_mode,0x500088
    .globl   start_stage
@@ -62,6 +72,8 @@
    .set  MENU_ITEM_SELECT,0x5000A5
    .globl   TEST_MENU_FLAG
    .set  TEST_MENU_FLAG,0x5000A6
+   .globl   total_time_ram
+   .set  total_time_ram,0x5000B0
    .globl   RED
    .set  RED,0x5000E0
    .globl   GREEN
@@ -140,10 +152,28 @@
    .set  total_points,0x50042C
    .globl   start_yang
    .set  start_yang,0x500433
+   .globl   billboard_test_loop_counter
+   .set  billboard_test_loop_counter,0x50043C
+   .globl   billboard_active_frame_counter
+   .set  billboard_active_frame_counter,0x50043E
+   .globl   billboard_test_flag
+   .set  billboard_test_flag,0x500440
+   .globl   billboard_test_flag_0
+   .set  billboard_test_flag_0,0x500441
    .globl   RANDOM_MODE
    .set  RANDOM_MODE,0x500450
    .globl   randomize_story_order
    .set  randomize_story_order,0x500454
+   .globl   p1_barrier_flag
+   .set  p1_barrier_flag,0x5004B8
+   .globl   p2_barrier_flag
+   .set  p2_barrier_flag,0x5004BC
+   .globl   continue_count
+   .set  continue_count,0x5004F0
+   .globl   also_continue_count
+   .set  also_continue_count,0x5004F4
+   .globl   rounds_lost_vs_cpu
+   .set  rounds_lost_vs_cpu,0x5004F8
    .globl   not_use
    .set  not_use,0x500600
    .globl   not_free
@@ -160,6 +190,8 @@
    .set  INTERUPT_FLAGS_HELD_2,0x50070C
    .globl   COIN_INTERUPT_FLAGS
    .set  COIN_INTERUPT_FLAGS,0x500718
+   .globl   fill_io_0x1E
+   .set  fill_io_0x1E,0x50071C
    .globl   P1_PARTS_ADD
    .set  P1_PARTS_ADD,0x500804
    .globl   P2_PARTS_ADD
@@ -210,6 +242,8 @@
    .set  mod_fa_win0,0x50087C
    .globl   mod_fa_win1
    .set  mod_fa_win1,0x500880
+   .globl   mod_fa_unused
+   .set  mod_fa_unused,0x500884
    .globl   mod_fa_pol_string
    .set  mod_fa_pol_string,0x500888
    .globl   mod_fa_stage_efc
@@ -656,6 +690,8 @@
    .set  ofs_e,0x50A35C
    .globl   ofs_f
    .set  ofs_f,0x50A360
+   .globl   draw_particle
+   .set  draw_particle,0x50A414
    .globl   zanzou_ma
    .set  zanzou_ma,0x50A418
    .globl   zanzou_inc
@@ -668,6 +704,8 @@
    .set  zanzou_num,0x50A422
    .globl   barrier_default_num
    .set  barrier_default_num,0x50A424
+   .globl   float_2
+   .set  float_2,0x50A428
    .globl   float_5_0_ram
    .set  float_5_0_ram,0x50A700
    .globl   float_5_1_ram
@@ -688,8 +726,8 @@
    .set  AUDIO_3,0x50EFB0
    .globl   ptr_BACKUP_RAM_TO_RAM
    .set  ptr_BACKUP_RAM_TO_RAM,0x50F300
-   .globl   stack_pointer_ram
-   .set  stack_pointer_ram,0x50F3FC
+   .globl   stack_pointer_ram_add
+   .set  stack_pointer_ram_add,0x50F3FC
    .globl   ec_en_flag
    .set  ec_en_flag,0x50F610
    .globl   ec_en_flag0
@@ -1958,6 +1996,24 @@
    .set  ARRAY_NUM_GREEN,0x544200
    .globl   ARRAY_NUM_BLUE
    .set  ARRAY_NUM_BLUE,0x544400
+   .globl   TST_RED_ADD_RAM
+   .set  TST_RED_ADD_RAM,0x544600
+   .globl   TST_RED_MUL_RAM
+   .set  TST_RED_MUL_RAM,0x544601
+   .globl   TST_GRN_ADD_RAM
+   .set  TST_GRN_ADD_RAM,0x544602
+   .globl   TST_GRN_MUL_RAM
+   .set  TST_GRN_MUL_RAM,0x544603
+   .globl   TST_BLUE_ADD_RAM
+   .set  TST_BLUE_ADD_RAM,0x544604
+   .globl   TST_BLUE_MUL_RAM
+   .set  TST_BLUE_MUL_RAM,0x544605
+   .globl   RED_RAM
+   .set  RED_RAM,0x544606
+   .globl   GREEN_RAM
+   .set  GREEN_RAM,0x544607
+   .globl   BLUE_RAM
+   .set  BLUE_RAM,0x544608
    .globl   busy_signal_flag
    .set  busy_signal_flag,0x550000
    .globl   NOT_USE_VAL
@@ -1972,8 +2028,8 @@
    .set  BACKUP_RAM_TO_RAM,0x599000
    .globl   save_working
    .set  save_working,0x59C000
-   .globl   short_0x12_ram
-   .set  short_0x12_ram,0x59C306
+   .globl   backup_ram_check_0x12
+   .set  backup_ram_check_0x12,0x59C306
    .globl   aInosehtchgifRe
    .set  aInosehtchgifRe,0x59C308
    .globl   total_time
@@ -2044,10 +2100,10 @@
    .set  CREDIT_01,0x59C388
    .globl   CREDIT_02
    .set  CREDIT_02,0x59C38C
-   .globl   chute_1
-   .set  chute_1,0x59C390
    .globl   chute_2
-   .set  chute_2,0x59C394
+   .set  chute_2,0x59C390
+   .globl   chute_1
+   .set  chute_1,0x59C394
    .globl   coin_credits
    .set  coin_credits,0x59C398
    .globl   service_credits
@@ -2106,6 +2162,14 @@
    .set  list_motions_ram,0x5A0004
    .globl instruction_thing
    .set instruction_thing,0x5FF000 
+   .globl instruction_thing2
+   .set instruction_thing2,0x5FF410
+   .globl   GEO_START
+   .set  GEO_START,0x800000
+   .globl   GEO_PROGRAM_START
+   .set  GEO_PROGRAM_START,0x804000
+   .globl   COPRO_SHARC_IOP_START
+   .set  COPRO_SHARC_IOP_START,0x8C0000
    .globl   BUFF_RAM_START
    .set  BUFF_RAM_START,0x900000
    .globl   BUFF_RAM_01
@@ -2114,8 +2178,20 @@
    .set  BUFF_RAM_02,0x910000
    .globl   BUFF_RAM_03
    .set  BUFF_RAM_03,0x918000
+   .globl COPRO_CONTROL1_START
+   .set  COPRO_CONTROL1_START,0x980000
+   .globl GEO_CTL1_START
+   .set  GEO_CTL1_START,0x980008
+   .globl   COPRO_STATUS_START
+   .set  COPRO_STATUS_START,0x980014
    .globl   CPU_CONTROL_START
    .set  CPU_CONTROL_START,0xE00000
+   .globl   IRQ_REQUEST_START
+   .set  IRQ_REQUEST_START,0xE80000
+   .globl   IRQ_ENABLE_START
+   .set  IRQ_ENABLE_START,0xE80004
+   .globl   TIMERS_START
+   .set  TIMERS_START,0xF00000
    .globl   TILE_DATA_START
    .set  TILE_DATA_START,0x1000000
    .globl   CG_DATA_START
@@ -2134,8 +2210,16 @@
    .set  STAGE_PALETTE_DATA,0x1800000
    .globl   PLAYER_PALETTE_DATA
    .set  PLAYER_PALETTE_DATA,0x1802000
+   .globl   COLORXLAT_START
+   .set  COLORXLAT_START,0x1810000
+   .globl   _3D_ZCLIP_START
+   .set  _3D_ZCLIP_START,0x181C000
    .globl   IO_PORTS
    .set  IO_PORTS,0x1C00000
+   .globl   IO_BILLBOARD
+   .set  IO_BILLBOARD,0x1C00008
+   .globl   unknown_input
+   .set  unknown_input,0x1C0001E
    .globl   SERIAL_START
    .set  SERIAL_START,0x1C80000
    .globl   BACKUP_RAM_START
@@ -2188,6 +2272,8 @@
    .set  aMor_1,0x1D032B4
    .globl   aOgu_1
    .set  aOgu_1,0x1D032BC
+   .globl play_time_bak
+   .set play_time_bak,0x1D03304
    .globl   short_0x12
    .set  short_0x12,0x1D03306
    .globl   aInosehtchgifRe_0
@@ -2260,10 +2346,10 @@
    .set  CREDIT_01_bk,0x1D03388
    .globl   CREDIT_02_bk
    .set  CREDIT_02_bk,0x1D0338C
-   .globl   bk_chute_1
-   .set  bk_chute_1,0x1D03390
    .globl   bk_chute_2
-   .set  bk_chute_2,0x1D03394
+   .set  bk_chute_2,0x1D03390
+   .globl   bk_chute_1
+   .set  bk_chute_1,0x1D03394
    .globl   bk_coin_credits
    .set  bk_coin_credits,0x1D03398
    .globl   bk_service_credits
@@ -2332,7 +2418,13 @@
    .set  num_motions_xtra,0x6C00000
    .globl   TEXRAM0_START
    .set  TEXRAM0_START,0x11000000
+   .globl   textureram0
+   .set  textureram0,0x11100000
    .globl   TEXRAM1_START
    .set  TEXRAM1_START,0x11200000
+   .globl   textureram1
+   .set  textureram1,0x11300000
    .globl   LUMA_START
    .set  LUMA_START,0x11400000
+   .globl   LUMA2_START
+   .set  LUMA2_START,0x12800000

@@ -14,4 +14,4 @@ It's in its infancy, and there are a few things that should be taken into consid
 >	./i960-coff-ld -AKB --oformat binary -e 0xB0 -o rom.bin out.o
 * The created binary will need to be split into a word-interleaved format in order to run on emulators or be burned to EPROMs. I will release a tool to do this soon.
 
-I've spent probably close to two years on this now, and recently trying to reassemble the ROM helped fix a lot of things I wasn't aware of. I will try to get this repo 1:1 with the original ROM source, but I can't promise any time frame.
+This has been nearly a three year running project of mine. The build is not 'shiftable' yet, but custom code can be inserted and referenced at the end of the ROM data in the `0xFF` filler.
