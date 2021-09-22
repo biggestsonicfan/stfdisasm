@@ -6,7 +6,7 @@ I recommend making and *not* installing these old versions of binutils. To make 
  1. tar xjf binutils-2.16.1a.tar.bz2
  2. mkdir build && cd build
  3. ../binutils-2.16.1/config.guess (use the output  of this in the next bit)
- 4. ../binutils-2.16.1/configure --target=i960-coff --enable-obsolete --prefix=/wherever/you/want/to/put/the/binutils/ --build=(config.guess ouput) --host=(config.guess ouput)--with-gcc --with-gnu-as --with-gnu-ld
+ 4. ../binutils-2.16.1/configure --target=i960-coff --enable-obsolete --prefix=/wherever/you/want/to/put/the/binutils/ --build=(config.guess ouput) --host=(config.guess ouput) --with-gcc --with-gnu-as --with-gnu-ld
  5. make tooldir=/wherever/you/want/to/put/the/binutils/
  6.  make tooldir=/wherever/you/want/to/put/the/binutils/ install
 
