@@ -2192,6 +2192,12 @@
    .set  IRQ_ENABLE_START,0xE80004
    .globl   TIMERS_START
    .set  TIMERS_START,0xF00000
+   .globl   TIMER_02
+   .set  TIMER_02,0xF00004
+   .globl  TIMER_03
+   .set  TIMER_03,0xF00008
+   .globl   TIMER_04
+   .set  TIMER_04,0xF0000C
    .globl   TILE_DATA_START
    .set  TILE_DATA_START,0x1000000
    .globl   CG_DATA_START
