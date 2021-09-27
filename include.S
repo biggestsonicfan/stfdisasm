@@ -164,6 +164,8 @@
    .set  RANDOM_MODE,0x500450
    .globl   randomize_story_order
    .set  randomize_story_order,0x500454
+   .globl   health_bar_hud_draw_frame_count
+   .set  health_bar_hud_draw_frame_count,0x500466
    .globl   p1_barrier_flag
    .set  p1_barrier_flag,0x5004B8
    .globl   p2_barrier_flag
@@ -714,6 +716,8 @@
    .set  val_vs_energy_max,0x50A708
    .globl   val_1p_energy_max
    .set  val_1p_energy_max,0x50A70A
+   .globl   list_90_floats_RAM
+   .set  list_90_floats_RAM,0x50A800
    .globl   working_rate
    .set  working_rate,0x50D004
    .globl   var_diff
@@ -2418,8 +2422,10 @@
    .set  offset_list_motions,0x6400004
    .globl   list_motions
    .set  list_motions,0x6400820
-   .globl   texture_pallete_offsets
-   .set  texture_pallete_offsets,0x6480300
+   .globl   cg_offsets
+   .set  cg_offsets,0x6480000
+   .globl   texture_palette_offsets
+   .set  texture_palette_offsets,0x6480300
    .globl   num_motions_xtra
    .set  num_motions_xtra,0x6C00000
    .globl   TEXRAM0_START
