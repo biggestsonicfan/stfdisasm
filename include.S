@@ -36,8 +36,12 @@
    .set  num_rounds_to_win,0x500052
    .globl   STAGE_ID
    .set  STAGE_ID,0x500054
-   .globl curr_round_num
+   .globl   curr_round_num
    .set curr_round_num,0x500055
+   .globl   vs_match_count_ingame
+   .set  vs_match_count_ingame,0x500059
+   .globl   p1_match_count_ingame
+   .set  p1_match_count_ingame,0x50005A
    .globl   LEVEL_ID
    .set  LEVEL_ID,0x500064
    .globl   winner
@@ -732,6 +736,8 @@
    .set  ptr_BACKUP_RAM_TO_RAM,0x50F300
    .globl   stack_pointer_ram_add
    .set  stack_pointer_ram_add,0x50F3FC
+   .globl   enemy_command_offset
+   .set  enemy_command_offset,0x50F608
    .globl   ec_en_flag
    .set  ec_en_flag,0x50F610
    .globl   ec_en_flag0
