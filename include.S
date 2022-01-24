@@ -76,8 +76,8 @@
    .set  MENU_ITEM_SELECT,0x5000A5
    .globl   TEST_MENU_FLAG
    .set  TEST_MENU_FLAG,0x5000A6
-   .globl   total_time_ram
-   .set  total_time_ram,0x5000B0
+   .globl   total_game_time_ram
+   .set  total_game_time_ram,0x5000B0
    .globl   RED
    .set  RED,0x5000E0
    .globl   GREEN
@@ -144,6 +144,10 @@
    .set  _20K_PLAYS_FLAG,0x50040E
    .globl   SKIP_WARNING
    .set  SKIP_WARNING,0x500410
+   .globl   total_win
+   .set  total_win,0x500414
+   .globl   total_time
+   .set total_time,0x500418
    .globl   total_skill
    .set  total_skill,0x50041C
    .globl   win_points
@@ -264,6 +268,8 @@
    .set  BUFF_ADD,0x501004
    .globl   BUFF_MAX
    .set  BUFF_MAX,0x501008
+   .globl   long_5000
+   .set  long_5000,0x501018
    .globl   POLYGON
    .set  POLYGON,0x50101C
    .globl   VECTER_X
@@ -348,6 +354,8 @@
    .set  pos_01_z,0x506218
    .globl   debug_flag
    .set  debug_flag,0x508000
+   .globl   motion_set_mot_val
+   .set  motion_set_mot_val,0x508020
    .globl   mem_poly_test_No
    .set  mem_poly_test_No,0x508078
    .globl   mem_poly_test_No_disp
@@ -2000,6 +2008,8 @@
    .set  TRANS_MAP,0x53013C
    .globl   REPLAY_BANK_ADR_value
    .set  REPLAY_BANK_ADR_value,0x531000
+   .globl   fa_object0_ram
+   .set  fa_object0_ram,0x543100
    .globl   ARRAY_NUM_RED
    .set  ARRAY_NUM_RED,0x544000
    .globl   ARRAY_NUM_GREEN
@@ -2042,8 +2052,8 @@
    .set  backup_ram_check_0x12,0x59C306
    .globl   aInosehtchgifRe
    .set  aInosehtchgifRe,0x59C308
-   .globl   total_time
-   .set  total_time,0x59C318
+   .globl   total_game_time
+   .set  total_game_time,0x59C318
    .globl   credits_required_bk_ram
    .set  credits_required_bk_ram,0x59C324
    .globl   p1_match_count
@@ -2088,8 +2098,8 @@
    .set  game_assign_byte_flag,0x59C353
    .globl   max_energy_vs_ram
    .set  max_energy_vs_ram,0x59C354
-   .globl   unused_db_unknown0
-   .set  unused_db_unknown0,0x59C356
+   .globl   un_stage_width
+   .set  un_stage_width,0x59C356
    .globl   barrier_count
    .set  barrier_count,0x59C358
    .globl   TST_RED_ADD_bk_ram
@@ -2142,6 +2152,10 @@
    .set  win_by_ko_count,0x59C414
    .globl   win_by_judge_count
    .set  win_by_judge_count,0x59C41C
+   .globl   min_vs_time_ram
+   .set  min_vs_time_ram,0x59C600
+   .globl   max_vs_time_ram
+   .set  max_vs_time_ram,0x59C604
    .globl   continue_count_vs
    .set  continue_count_vs,0x59C608
    .globl   set_count_vs
@@ -2294,8 +2308,8 @@
    .set  short_0x12,0x1D03306
    .globl   aInosehtchgifRe_0
    .set  aInosehtchgifRe_0,0x1D03308
-   .globl   total_time_bk
-   .set  total_time_bk,0x1D03318
+   .globl   total_game_time_bk
+   .set  total_game_time_bk,0x1D03318
    .globl   CREDITS_REQUIRED
    .set  CREDITS_REQUIRED,0x1D03324
    .globl   p1_match_count_bk
@@ -2340,8 +2354,8 @@
    .set  game_assign_byte_flag_bk,0x1D03353
    .globl   max_energy_vs_array_bak
    .set  max_energy_vs_array_bak,0x1D03354
-   .globl   unused_db_unknown0_bk
-   .set  unused_db_unknown0_bk,0x1D03356
+   .globl   un_stage_width_bk
+   .set  un_stage_width_bk,0x1D03356
    .globl   barrier_count_bk
    .set  barrier_count_bk,0x1D03358
    .globl   TST_RED_ADD_bk
@@ -2404,10 +2418,10 @@
    .set  win_by_ko_count_bk,0x1D03414
    .globl   win_by_judge_count_bk
    .set  win_by_judge_count_bk,0x1D0341C
-   .globl   min_vs_time
-   .set  min_vs_time,0x1D03600
-   .globl   max_vs_time
-   .set  max_vs_time,0x1D03604
+   .globl   min_vs_time_bk
+   .set  min_vs_time_bk,0x1D03600
+   .globl   max_vs_time_bk
+   .set  max_vs_time_bk,0x1D03604
    .globl   continue_count_vs_bk
    .set  continue_count_vs_bk,0x1D03608
    .globl   set_count_vs_bk
