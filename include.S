@@ -2186,8 +2186,8 @@
    .set  list_motions_ram,0x5A0004
    .globl instruction_thing
    .set instruction_thing,0x5FF000 
-   .globl instruction_thing2
-   .set instruction_thing2,0x5FF410
+   .globl prcb_ram
+   .set prcb_ram,0x5FF410
    .globl   GEO_START
    .set  GEO_START,0x800000
    .globl   GEO_PROGRAM_START
