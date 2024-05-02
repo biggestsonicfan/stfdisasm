@@ -1,7 +1,7 @@
 /******************************************************************/
 /* Include values for Sonic the Fighters disasssembly
    Makes the whole thing a little more human readable */
-/******************************************************************/   
+/******************************************************************/
    .globl   RAMBASE_START
    .set  RAMBASE_START,0x500000
    .globl   CPU_FAIL
@@ -10,8 +10,8 @@
    .set  frame_counter,0x500020
    .globl   CTRL_TIMER
    .set  CTRL_TIMER,0x500024
-   .globl   GAME_TIMER
-   .set  GAME_TIMER,0x500028
+   .globl   game_timer
+   .set  game_timer,0x500028
    .globl   mode
    .set  mode,0x50002A
    .globl   also_mode
@@ -22,10 +22,12 @@
    .set  _sub_mode,0x500030
    .globl   also_sub_mode
    .set  also_sub_mode,0x500031
-   .globl   nameentry
-   .set  nameentry,0x500038
+   .globl   event
+   .set  event,0x500038
    .globl   draw_vs_routine_flag
    .set  draw_vs_routine_flag,0x500048
+   .globl   ingame_countdown_FFFF
+   .set  ingame_countdown_FFFF,0x50004A
    .globl   gameprogram
    .set  gameprogram,0x50004C
    .globl   p1_wins
@@ -42,8 +44,8 @@
    .set  vs_match_count_ingame,0x500059
    .globl   p1_match_count_ingame
    .set  p1_match_count_ingame,0x50005A
-   .globl   LEVEL_ID
-   .set  LEVEL_ID,0x500064
+   .globl   stage_num
+   .set  stage_num,0x500064
    .globl   winner
    .set  winner,0x500065
    .globl   current_stage_played_num
@@ -66,6 +68,8 @@
    .set  replay_countdown,0x500092
    .globl   replay_bank_num
    .set  replay_bank_num,0x500096
+   .globl   random
+   .set  random,0x500098
    .globl   POLYGON_DISP
    .set  POLYGON_DISP,0x50009C
    .globl   energy_max
@@ -124,10 +128,10 @@
    .set  TST_BLUE_MUL,0x500239
    .globl   TST_B_BRIGHT
    .set  TST_B_BRIGHT,0x50023A
-   .globl   P1_CHAR_SEL_FLAGS
-   .set  P1_CHAR_SEL_FLAGS,0x500248
-   .globl   P2_CHAR_SEL_FLAGS
-   .set  P2_CHAR_SEL_FLAGS,0x50024C
+   .globl   select0_flag
+   .set  select0_flag,0x500248
+   .globl   select1_flag
+   .set  select1_flag,0x50024C
    .globl   texram_0
    .set  texram_0,0x500250
    .globl   texram_0_1
@@ -140,6 +144,8 @@
    .set  scroll_stage_num,0x500264
    .globl   cage_height
    .set  cage_height,0x50027C
+   .globl   adv_fade_cnt
+   .set  adv_fade_cnt,0x5003E8
    .globl   _20K_PLAYS_FLAG
    .set  _20K_PLAYS_FLAG,0x50040E
    .globl   SKIP_WARNING
@@ -178,6 +184,10 @@
    .set  p1_barrier_flag,0x5004B8
    .globl   p2_barrier_flag
    .set  p2_barrier_flag,0x5004BC
+   .globl   am_cntr
+   .set am_cntr,0x5004C4
+   .globl   am_num
+   .set am_num,0x5004C6
    .globl   continue_count
    .set  continue_count,0x5004F0
    .globl   also_continue_count
@@ -196,18 +206,18 @@
    .set  INTERUPT_FLAGS_MOMENTARY,0x500704
    .globl   INTERUPT_FLAGS_MOMEN_ON_REL
    .set  INTERUPT_FLAGS_MOMEN_ON_REL,0x500708
-   .globl   INTERUPT_FLAGS_HELD_2
-   .set  INTERUPT_FLAGS_HELD_2,0x50070C
+   .globl   INTERUPT_FLAGS_HELD_PREV_FRAME
+   .set  INTERUPT_FLAGS_HELD_PREV_FRAME,0x50070C
    .globl   COIN_INTERUPT_FLAGS
    .set  COIN_INTERUPT_FLAGS,0x500718
    .globl   fill_io_0x1E
    .set  fill_io_0x1E,0x50071C
-   .globl   P1_PARTS_ADD
-   .set  P1_PARTS_ADD,0x500804
-   .globl   P2_PARTS_ADD
-   .set  P2_PARTS_ADD,0x500808
-   .globl   mod_fa_camera
-   .set  mod_fa_camera,0x500814
+   .globl   fa_rob0
+   .set  fa_rob0,0x500804
+   .globl   fa_rob1
+   .set  fa_rob1,0x500808
+   .globl   fa_camera
+   .set  fa_camera,0x500814
    .globl   mod_fa_control0
    .set  mod_fa_control0,0x50081C
    .globl   mod_fa_game_info
@@ -268,8 +278,8 @@
    .set  BUFF_ADD,0x501004
    .globl   BUFF_MAX
    .set  BUFF_MAX,0x501008
-   .globl   long_5000
-   .set  long_5000,0x501018
+   .globl   POLYGON_LIMIT
+   .set  POLYGON_LIMIT,0x501018
    .globl   POLYGON
    .set  POLYGON,0x50101C
    .globl   VECTER_X
@@ -330,6 +340,8 @@
    .set  vsync,0x50300E
    .globl   health_bar_flag
    .set  health_bar_flag,0x503014
+   .globl   TEXTURE_BUFFER
+   .set  TEXTURE_BUFFER, 0x503200
    .globl   AUDIO_1
    .set  AUDIO_1,0x504010
    .globl   AUDIO_2
@@ -474,8 +486,10 @@
    .set  FUCKING_PI,0x50950C
    .globl   PI_X2
    .set  PI_X2,0x509510
-   .globl   float_1
-   .set  float_1,0x509518
+   .globl   player_model_y_scale
+   .set  player_model_y_scale,0x509518
+   .globl   player_model_horiz_scale
+   .set  player_model_horiz_scale,0x50951C
    .globl   float_10
    .set  float_10,0x509524
    .globl   float_100
@@ -538,46 +552,46 @@
    .set  stage_vxmin,0x50A0D8
    .globl   stage_vxmax
    .set  stage_vxmax,0x50A0DC
-   .globl   db_un_SONIC_float
-   .set  db_un_SONIC_float,0x50A0E0
-   .globl   db_un_TAILS_float
-   .set  db_un_TAILS_float,0x50A0E4
-   .globl   db_un_AMY_float
-   .set  db_un_AMY_float,0x50A0E8
-   .globl   db_un_METAL_float
-   .set  db_un_METAL_float,0x50A0EC
-   .globl   db_un_FANG_float
-   .set  db_un_FANG_float,0x50A0F0
-   .globl   db_un_KUMA_float
-   .set  db_un_KUMA_float,0x50A0F4
-   .globl   db_un_KNUCKLE_float
-   .set  db_un_KNUCKLE_float,0x50A0F8
-   .globl   db_un_ESPIO_float
-   .set  db_un_ESPIO_float,0x50A0FC
-   .globl   db_un_EGGMAN_float
-   .set  db_un_EGGMAN_float,0x50A100
-   .globl   db_un_BEAN_float
-   .set  db_un_BEAN_float,0x50A108
-   .globl   db_un_SONIC_I_float
-   .set  db_un_SONIC_I_float,0x50A148
-   .globl   db_un_TAILS_I_float
-   .set  db_un_TAILS_I_float,0x50A14C
-   .globl   db_un_AMY_I_float
-   .set  db_un_AMY_I_float,0x50A150
-   .globl   db_un_METAL_I_float
-   .set  db_un_METAL_I_float,0x50A154
-   .globl   db_un_FANG_I_float
-   .set  db_un_FANG_I_float,0x50A158
-   .globl   db_un_KUMA_I_float
-   .set  db_un_KUMA_I_float,0x50A15C
-   .globl   db_un_KNUCKLE_I_float
-   .set  db_un_KNUCKLE_I_float,0x50A160
-   .globl   db_un_ESPIO_I_float
-   .set  db_un_ESPIO_I_float,0x50A164
-   .globl   db_un_EGGMAN_I_float
-   .set  db_un_EGGMAN_I_float,0x50A168
-   .globl   db_un_BEAN_I_float
-   .set  db_un_BEAN_I_float,0x50A170
+   .globl   rob_light_sonic
+   .set  rob_light_sonic,0x50A0E0
+   .globl   rob_light_tails
+   .set  rob_light_tails,0x50A0E4
+   .globl   rob_light_amy
+   .set  rob_light_amy,0x50A0E8
+   .globl   rob_light_metal
+   .set  rob_light_metal,0x50A0EC
+   .globl   rob_light_fang
+   .set  rob_light_fang,0x50A0F0
+   .globl   rob_light_kuma
+   .set  rob_light_kuma,0x50A0F4
+   .globl   rob_light_knuckle
+   .set  rob_light_knuckle,0x50A0F8
+   .globl   rob_light_espio
+   .set  rob_light_espio,0x50A0FC
+   .globl   rob_light_eggman
+   .set  rob_light_eggman,0x50A100
+   .globl   rob_light_bean
+   .set  rob_light_bean,0x50A108
+   .globl   rob_light_sonic_i
+   .set  rob_light_sonic_i,0x50A148
+   .globl   rob_light_tails_i
+   .set  rob_light_tails_i,0x50A14C
+   .globl   rob_light_amy_i
+   .set  rob_light_amy_i,0x50A150
+   .globl   rob_light_metal_i
+   .set  rob_light_metal_i,0x50A154
+   .globl   rob_light_fang_i
+   .set  rob_light_fang_i,0x50A158
+   .globl   rob_light_kuma_i
+   .set  rob_light_kuma_i,0x50A15C
+   .globl   rob_light_knuckle_i
+   .set  rob_light_knuckle_i,0x50A160
+   .globl   rob_light_espio_i
+   .set  rob_light_espio_i,0x50A164
+   .globl   rob_light_eggman_i
+   .set  rob_light_eggman_i,0x50A168
+   .globl   rob_light_bean_i
+   .set  rob_light_bean_i,0x50A170
    .globl   stage_low_judge
    .set  stage_low_judge,0x50A1B0
    .globl   guard_limit
@@ -742,6 +756,8 @@
    .set  AUDIO_3,0x50EFB0
    .globl   ptr_BACKUP_RAM_TO_RAM
    .set  ptr_BACKUP_RAM_TO_RAM,0x50F300
+   .globl   deb_num
+   .set  deb_num,0x50F380
    .globl   stack_pointer_ram_add
    .set  stack_pointer_ram_add,0x50F3FC
    .globl   enemy_command_offset
@@ -1002,8 +1018,10 @@
    .set  ec_ura,0x50F68E
    .globl   ec_le_eachang
    .set  ec_le_eachang,0x50F68F
-   .globl   mod_fa_nameentry_add
-   .set  mod_fa_nameentry_add,0x510000
+   .globl   mae_poly
+   .set  mae_poly,0x50FFFC
+   .globl   event_data
+   .set  event_data,0x510000
    .globl   mod_fa_sel_disp_add
    .set  mod_fa_sel_disp_add,0x510280
    .globl   mod_fa_key_play_add
@@ -2044,6 +2062,10 @@
    .set  CG_NO,0x5603E6
    .globl   p1_rob_weight_ram
    .set  p1_rob_weight_ram,0x5720A8
+   .globl   finish_wall_flag
+   .set  finish_wall_flag,0x574004
+   .globl   finish_coli_num
+   .set  finish_coli_num,0x574014
    .globl   BACKUP_RAM_TO_RAM
    .set  BACKUP_RAM_TO_RAM,0x599000
    .globl   save_working
@@ -2184,10 +2206,16 @@
    .set  num_motions_ram,0x5A0000
    .globl   list_motions_ram
    .set  list_motions_ram,0x5A0004
-   .globl intr_ram
-   .set intr_ram,0x5FF000 
-   .globl prcb_ram
-   .set prcb_ram,0x5FF410
+   .globl _intr_table_ram
+   .set _intr_table_ram,0x5FF000 
+   .globl   _prcb_ram
+   .set _prcb_ram,0x5FF410
+   .globl   _intr_stack
+   .set _intr_stack,0x5FF500
+   .globl   stack_pointer_ram
+   .set  stack_pointer_ram,0x5FF640
+   .globl   _trap_stack
+   .set _trap_stack,0x5FF800
    .globl   GEO_START
    .set  GEO_START,0x800000
    .globl   GEO_PROGRAM_START
@@ -2208,6 +2236,8 @@
    .set  GEO_CTL1_START,0x980008
    .globl   COPRO_STATUS_START
    .set  COPRO_STATUS_START,0x980014
+   .globl   MIDI_START
+   .set  MIDI_START,0x9C0000
    .globl   CPU_CONTROL_START
    .set  CPU_CONTROL_START,0xE00000
    .globl   IRQ_REQUEST_START
@@ -2238,8 +2268,8 @@
    .set  TMAPGFXBASE_START,0x1080000
    .globl   STAGE_PALETTE_DATA
    .set  STAGE_PALETTE_DATA,0x1800000
-   .globl   PLAYER_PALETTE_DATA
-   .set  PLAYER_PALETTE_DATA,0x1802000
+   .globl   POLY_PALETTE_DATA
+   .set  POLY_PALETTE_DATA,0x1802000
    .globl   COLORXLAT_START
    .set  COLORXLAT_START,0x1810000
    .globl   _3D_ZCLIP_START
@@ -2302,6 +2332,8 @@
    .set  aMor_1,0x1D032B4
    .globl   aOgu_1
    .set  aOgu_1,0x1D032BC
+   .globl   crc_value_bk
+   .set  crc_value_bk,0x1D03302
    .globl play_time_bak
    .set play_time_bak,0x1D03304
    .globl   short_0x12
@@ -2434,8 +2466,14 @@
    .set  win_by_judge_count_vs_bk,0x1D0361C
    .globl   add_TILE_DATA_START
    .set  add_TILE_DATA_START,0x20D000C
-   .globl   PLAYER_PALETTE_DATA_ROM
-   .set  PLAYER_PALETTE_DATA_ROM,0x2100000
+   .globl   POLYGON_LIST_COUNT
+   .set POLYGON_LIST_COUNT,0x20E0000
+   .globl   max_poly
+   .set  max_poly,0x20E0000
+   .globl   POLYGON_NUM_OFFSET
+   .set POLYGON_NUM_OFFSET,0x20E0004
+   .globl   POLY_PALETTE_DATA_ROM
+   .set  POLY_PALETTE_DATA_ROM,0x2100000
    .globl   texture_check_data
    .set  texture_check_data,0x2300000
    .globl   offset_list_motions
@@ -2460,3 +2498,4 @@
    .set  LUMA_START,0x11400000
    .globl   LUMA2_START
    .set  LUMA2_START,0x12800000
+   #end
