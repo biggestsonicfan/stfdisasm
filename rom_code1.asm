@@ -15576,7 +15576,7 @@ loc_115EC:                              # CODE XREF: interrupt_wait_b+60↑j
                 ldob    RAMBASE_START, g0
                 cmpobe  1, g0, loc_1163C
 loc_11608:                              # CODE XREF: interrupt_wait_b+78↑j
-                ldob    RAMBASE_START, g0
+                callx   rng_probe       # rng-serial: was ldob RAMBASE_START, g0 (8 bytes)
 _idle:                                  # CODE XREF: interrupt_wait_b+98↓j
                 ldob    RAMBASE_START, r3
                 cmpibe  r3, g0, _idle
@@ -213344,6 +213344,104 @@ NAME_CELL_AND_CG_USA:.short 130         # DATA XREF: sel_disp_init+5B8↑o
                 .long        0xF,0x40A00000,         0
                 .long        0xF,0x40400000,         0
                 .long        0xF,0x40A00000,         0
-byte_F2234:     .fill 0xDDCC, 1, 0xFF
+# ---------------------------------------------------------------------------
+# rng-serial (Pinboard #598): send the RNG state and the board timers over the
+# RS-422 link (315-5649) once a frame, from the idle wait, without moving the
+# game's timing. `random` (0x500098) is advanced by rand from the four timers,
+# so a host reading this from the board can hold the timers against an
+# emulator's.
+#
+# Packet, 19 bytes, each sent the m2-sdk way (docs/rs422-serial-protocol.md):
+# TXD2 = byte, then TXD1 = 0x07, so the wire shows 07 xx per byte. Bytes:
+# 5A A5, frame_counter & 0xFF, random (4), TIMERS_START, TIMER_02, TIMER_03,
+# TIMER_04 (3 bytes each), all little-endian. TIMER_04 is read 16 cycles after
+# the idle wait is entered, the others 28 to 40, random at 44.
+#
+# Cycles are counted with MAME's i960 estimates (m2-hle2 i960_cycle_table).
+# Stock runs `ldob RAMBASE_START, g0` (4) and then the spin `ldob; cmpibe`
+# (4 + 4), so its instructions end on a 4-cycle grid from the wait's entry
+# and the spin turns every 8. The probe has to leave both alone:
+#   - it ends 4 + 8n cycles after entry, so the spin meets the vblank in the
+#     same phase as stock;
+#   - an interrupt in the middle of it would be taken at a different cycle
+#     than in the spin, and the Timer handler re-arms TIMER_04 from there,
+#     which moves every random number after it. So everything up to the
+#     guard costs 4 a step on stock's grid (callx 9 + movt 3 lands on it),
+#     and the body only runs when TIMER_04 is further off than the body is
+#     long (rp_limit). The vblank is never under 19,000 cycles away here,
+#     and the other three timers are re-armed every frame.
+#   - Left open: an interrupt that falls due within the callx (9) or the
+#     ret (7) is still taken up to 8 cycles off stock. That is ~16 cycles a
+#     frame against TIMER_04's 1,048,575-cycle period.
+#   skip path: callx 9 + 28 (movt, ldob, ld, ld, cmpobg + 1 lda) + ret 7
+#              = 4 + 32
+#   body:      callx 9 + movt 3 + 16 + 20 loads + 7 x (8 setup) + 7 x bx 3
+#              + 19 x (11 + 5 x RP_DELAY) + 7 pad + ret 7 = 4 + 12504
+#              (12504 = 8 x 1563 with RP_DELAY = 128)
+# g0 is loaded first, as stock does at this point, so a vblank that falls
+# inside the probe still ends the wait at once instead of a frame later.
+# RP_DELAY spaces the bytes: one transaction is 2 wire bytes at 2 Mbaud,
+# 10 us = 250 cycles, and a turn of the delay loop is at least 2 cycles.
+# Change any instruction here and count the budget again.
+# ---------------------------------------------------------------------------
+                .set    RP_DELAY, 128
+                .set    RP_TXD1, 0x1C00012
+                .set    RP_TXD2, 0x1C00014
+byte_F2234:
+rng_probe:
+                movt    r4, r4          # 3: back onto stock's 4-cycle grid
+                ldob    RAMBASE_START, g0
+                ld      TIMER_04, r4
+                ld      rp_limit, r5
+                cmpobg  r5, r4, rp_skip # TIMER_04 due inside the body
+                ld      TIMERS_START, r6
+                ld      TIMER_02, r7
+                ld      TIMER_03, r8
+                ld      random, r9
+                ldob    frame_counter, r14
+                lda     7, r12
+                lda     0xA55A, r10
+                lda     2, r11
+                balx    rp_emit, r3
+                mov     r14, r10
+                lda     1, r11
+                balx    rp_emit, r3
+                mov     r9, r10
+                lda     4, r11
+                balx    rp_emit, r3
+                mov     r6, r10
+                lda     3, r11
+                balx    rp_emit, r3
+                mov     r7, r10
+                lda     3, r11
+                balx    rp_emit, r3
+                mov     r8, r10
+                lda     3, r11
+                balx    rp_emit, r3
+                mov     r4, r10
+                lda     3, r11
+                balx    rp_emit, r3
+                mov     r13, r13        # pad 7: see the budget above
+                mov     r13, r13
+                mov     r13, r13
+                lda     0, r13
+                ret
+rp_skip:
+                lda     0, r13          # pad 1
+                ret
+# r10 = bytes, low first; r11 = count; r12 = 7; returns through r3.
+rp_emit:
+                stob    r10, RP_TXD2
+                stob    r12, RP_TXD1
+                shro    8, r10, r10
+                lda     RP_DELAY, r13
+rp_wait:
+                subo    1, r13, r13
+                cmpobne 0, r13, rp_wait
+                subo    1, r11, r11
+                cmpobne 0, r11, rp_emit
+                bx      (r3)
+rp_limit:       .word   0x3400          # > the body's 12,500 cycles from the guard
+                .fill 0xDDCC - (. - byte_F2234), 1, 0xFF
 		#end
 
