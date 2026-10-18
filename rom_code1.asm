@@ -213432,6 +213432,54 @@ rng_probe:
                 mov     r15, r10
                 lda     4, r11
                 balx    rp_emit, r3
+# rng-events (Pinboard #1126): then the game's own event profile, when the
+# frame has room for it. event_loop re-arms TIMER_02 before each of the 30
+# events and, after it, stores the counts it has run at 0x50C010 + 0x20 *
+# event: the event's own time, the "now" column of the game's debug event
+# screen (ldl TIMER_02, r14 reads r15 from TIMER_02 too: the timers do not
+# burst, in MAME and m2-hle2; the reader checks the board's). That splits
+# the frame by event without touching the game's code. Sent as 5A A7, 30 x 3
+# bytes, little-endian, only when TIMER_04 is further off than the whole body
+# (rp_ev_limit) and TIMER_03 read at most 320,000 counts since the vblank
+# (rp_ev_t03), so the vblank (~434,000) never falls inside it. The rest of
+# main_loop after event_loop (set_end_mark .. interrupt_wait_b) is TIMER_02 at
+# the probe less fa_pol_test's word: stamping it would cost cycles, and on the
+# frames that overrun (the boot's loads) those land after the vblank and move
+# the texture loader, so the attract would no longer be stock's.
+#   test:      ld 4 + lda 1 + and 1 + cmpobg 4 [= 10 to rp_noev]
+#              + ld 4 + cmpobg 4 [= 18 to rp_noev]
+#   header:    1 + 1 + 5 + 2 x 651 + 3 = 1312
+#   a word:    4 + 1 + 5 + 3 x 651 + 3 + 1 + 1 + 4 = 1972
+#   send:      18 + header 1312 + 2 + 30 x 1972 + pad 2 + 1 + b 1
+#              = 60496 = 8 x 7562
+#   no send:   10 or 18, + pad 6 = 16 or 24
+# so either way the body stays 4 + 8n.
+                ld      rp_ev_limit, r5
+                lda     0xFFFFF, r13
+                and     r13, r8, r13    # TIMER_03 as read
+                cmpobg  r5, r4, rp_noev # TIMER_04 due inside the event body
+                ld      rp_ev_t03, r6
+                cmpobg  r6, r13, rp_noev # too far into the frame
+                lda     0xA75A, r10
+                lda     2, r11
+                balx    rp_emit, r3
+                lda     0x50C010, r9
+                lda     30, r6
+rp_ev:
+                ld      (r9), r10
+                lda     3, r11
+                balx    rp_emit, r3
+                lda     0x20(r9), r9
+                subo    1, r6, r6
+                cmpobne 0, r6, rp_ev
+                mov     r13, r13        # pad 3
+                lda     0, r13
+                b       rp_tail
+rp_noev:
+                mov     r13, r13        # pad 6
+                mov     r13, r13
+                mov     r13, r13
+rp_tail:
                 mov     r13, r13        # pad 6: see the budget above
                 mov     r13, r13
                 mov     r13, r13
@@ -213452,6 +213500,8 @@ rp_wait:
                 cmpobne 0, r11, rp_emit
                 bx      (r3)
 rp_limit:       .word   0x4C00          # > the body's 18,400 cycles from the guard
+rp_ev_limit:    .word   0x15000         # > the whole body's 78,900 cycles from the guard
+rp_ev_t03:      .word   0xFFFFF - 320000 # TIMER_03 count at the latest send
                 .fill 0xDDCC - (. - byte_F2234), 1, 0xFF
 		#end
 
